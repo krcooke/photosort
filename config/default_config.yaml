@@ -1,0 +1,96 @@
+# Default PhotoSort Configuration
+
+# Directory structure configuration
+directory_structure:
+  # Pattern for organizing photos: {year}/{month}-{month_name}/{location}
+  pattern: "{year}/{month:02d}-{month_name}-{location}"
+  
+  # Fallback pattern when metadata is missing
+  fallback_pattern: "unsorted/{year}/{month:02d}"
+  
+  # Date source priority (first available wins)
+  date_source: ["exif_datetime", "exif_datetime_original", "file_mtime", "directory_inference"]
+  
+  # Location inference from directory paths
+  location_inference:
+    - pattern: ".*/(?P<location>[A-Za-z\\s]+)\\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{4}/.*"
+      priority: 1
+    - pattern: ".*/(?P<location>[A-Za-z\\s]+)\\s+\\d{4}/.*"
+      priority: 2
+    - pattern: ".*/(?P<location>[^/]+)/.*"
+      priority: 3
+
+# Duplicate detection settings
+duplicate_detection:
+  # Algorithm: dhash, phash, ahash, whash, colorhash
+  algorithm: "dhash"
+  
+  # Hamming distance threshold (0-64, lower = more strict)
+  threshold: 10
+  
+  # Quarantine folder for duplicates
+  quarantine_folder: "duplicates"
+  
+  # Action for duplicates: move, copy, hardlink, symlink
+  action: "move"
+  
+  # Keep original or best quality
+  keep_best_quality: true
+
+# Metadata enhancement settings
+metadata_enhancement:
+  # Write inferred location data to EXIF
+  write_location_to_exif: true
+  
+  # Write inferred keywords to EXIF
+  write_keywords_to_exif: true
+  
+  # Backup original files before modification
+  backup_originals: true
+  
+  # Reverse geocoding settings
+  reverse_geocoding:
+    # Enable GPS coordinate lookup to city/town names
+    enabled: true
+    
+    # Cache file for geocoding results (to avoid repeated API calls)
+    cache_file: "~/.photosort_geocoding_cache.json"
+    
+    # Rate limit between API calls (seconds)
+    rate_limit: 1.0
+  
+  # Keywords to extract from directory names
+  keyword_patterns:
+    - pattern: ".*/(?P<event>vacation|holiday|trip|wedding|birthday|christmas|party|festival|concert)/.*"
+      tag: "event"
+
+# File processing settings
+file_processing:
+  # Supported image formats
+  supported_formats: [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".webp", ".heic", ".raw", ".cr2", ".nef", ".dng"]
+  
+  # Skip files smaller than this (in bytes)
+  min_file_size: 1024
+  
+  # Max file size to process (in MB, 0 = no limit)
+  max_file_size: 0
+  
+  # Verify file integrity after operations
+  verify_operations: true
+  
+  # Number of worker threads
+  max_workers: 4
+
+# Output and logging settings
+output:
+  # Verbosity level: 0=quiet, 1=normal, 2=verbose, 3=debug
+  verbosity: 1
+  
+  # Show progress bars
+  show_progress: true
+  
+  # Log file path (empty = no log file)
+  log_file: ""
+  
+  # Dry run mode (don't actually move/modify files)
+  dry_run: false
